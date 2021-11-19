@@ -1,0 +1,195 @@
+openapi: 3.0.0
+info:
+  title: cart
+  version: 1.0.0
+  description: 購物車服務
+  contact:
+    name: Sam Zhu
+    url: 'https://blog.samzhu.dev/'
+  license:
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
+    name: Apache 2.0
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /cart:
+    post:
+      summary: Create Cart
+      operationId: create-cart-v1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RsCreateCartDTO'
+      description: 建立購物車
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RqCreateCartDTO'
+      tags:
+        - Cart
+  '/cart/{cartNumber}/product':
+    parameters:
+      - $ref: '#/components/parameters/cartNumber'
+    post:
+      summary: Add Cart Product
+      operationId: add-cart-product-v1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartInfoDTO'
+      description: 新增商品
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RqAddProductDTO'
+        description: ''
+      tags:
+        - Cart
+  '/cart/{cartNumber}/history':
+    parameters:
+      - $ref: '#/components/parameters/cartNumber'
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Cart
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RsCartHistoryDTO'
+      operationId: get-cart-history
+      description: 取得購物車歷史紀錄
+components:
+  schemas:
+    RqCreateCartDTO:
+      description: 建立購物車請求物件
+      type: object
+      x-examples:
+        example-1:
+          customerName: sam
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+          description: 消費者姓名
+      required:
+        - customerName
+    RsCreateCartDTO:
+      description: 建立購物車回傳物件
+      type: object
+      x-examples:
+        example-1:
+          cartNumber: '123'
+      properties:
+        cartNumber:
+          type: string
+          minLength: 1
+          description: 購物車編號
+      required:
+        - cartNumber
+    RqAddProductDTO:
+      description: 新增商品請求物件
+      type: object
+      x-examples:
+        example-1:
+          productId: '123'
+          tittle: iphone 13
+          price: 30000
+      title: ''
+      properties:
+        productId:
+          type: string
+          minLength: 1
+          description: 商品 ID
+        tittle:
+          type: string
+          minLength: 1
+          description: 商品名稱
+        price:
+          type: integer
+          description: 商品金額
+      required:
+        - productId
+        - tittle
+        - price
+    RsAddProductDTO:
+      $ref: '#/components/schemas/CartInfoDTO'
+    RsCartHistoryDTO:
+      title: RsCartHistoryDTO
+      type: array
+      description: 購物車歷史紀錄回傳物件
+      items:
+        type: object
+        description: 歷史紀錄
+    CartInfoDTO:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          cartNumber: '123'
+          customerName: sam
+          price: 0
+          products: []
+      properties:
+        cartNumber:
+          type: string
+          minLength: 1
+        customerName:
+          type: string
+          minLength: 1
+        price:
+          type: integer
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductInfoDTO'
+      required:
+        - cartNumber
+        - customerName
+        - price
+        - products
+    ProductInfoDTO:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          productId: '123'
+          tittle: iphone 13
+          price: 30000
+      properties:
+        productId:
+          type: string
+          minLength: 1
+        tittle:
+          type: string
+          minLength: 1
+        price:
+          type: integer
+      required:
+        - productId
+        - tittle
+        - price
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+  parameters:
+    cartNumber:
+      name: cartNumber
+      in: path
+      required: true
+      schema:
+        type: string
+      description: 購物車編號
+tags:
+  - name: Cart

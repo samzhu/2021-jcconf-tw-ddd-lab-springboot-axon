@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/devdb?serverTimezone=UTC&useLegacyDatetimeCode=false&autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: pw123456
+    hikari:
+      connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+  jpa:
+    hibernate:
+      ddl-auto: none # update 可以自動建立 Axon 所需要的表格
+    show-sql: false
+  liquibase:
+    enabled: true
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
+axon:
+  axonserver:
+    enabled: true
+    servers: 127.0.0.1
+
+logging:
+  level:
+    root: info
+    com.example.demo: debug

@@ -1,0 +1,153 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'org.openapi.generator' version '5.3.0'
+	id 'com.diffplug.spotless' version '5.17.1'
+}
+
+group = 'com.example'
+version = '0.0.1'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2020.0.4")
+	set('testcontainersVersion', "1.16.0")
+	set('axonVersion', "4.5.5")
+	set('springfoxVersion', "3.0.0")
+	set('mapstructVersion', "1.4.2.Final")
+	set('lombokMapstructBindingVersion', "0.2.0")
+	// OpenAPI input file
+	set('openapiInputSpec', "${rootDir}/reference/openapi.yaml")
+	// Output dir
+	// set('openapiOutputDir', "${rootDir}/generated/springboot")
+	set('openapiOutputDir', "${rootDir}")
+	set('openapiInvokerPackage', "com.example.demo")
+	set('openapiApiPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest")
+	set('openapiModelPackage', "${openapiInvokerPackage}.${rootProject.name}.interfaces.rest.dto")
+	set('openapiConfigPackage', "${openapiInvokerPackage}.configuration")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.liquibase:liquibase-core'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	// testImplementation 'org.testcontainers:mongodb'
+	testImplementation 'org.testcontainers:mysql'
+	// Tool
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	// axon
+	implementation 'org.axonframework:axon-spring-boot-starter'
+	// mapstruct
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	// Swagger
+	implementation "io.springfox:springfox-boot-starter:${springfoxVersion}"
+	implementation "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+	implementation "io.springfox:springfox-data-rest:${springfoxVersion}"
+	// UnitTest
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.axonframework:axon-bom:${axonVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+// 透過 OpenAPI 產生 API 介面
+// https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-gradle-plugin
+// https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/spring.md
+// ./gradlew openApiGenerate
+openApiGenerate {
+	generatorName = "spring"
+	library = "spring-boot"
+	inputSpec = "${openapiInputSpec}"
+	outputDir = "${openapiOutputDir}"
+	invokerPackage = "${openapiInvokerPackage}"
+	apiPackage = "${openapiApiPackage}"
+	modelPackage = "${openapiModelPackage}"
+	typeMappings = [
+		set: 'List'
+	]
+	instantiationTypes = [
+		set: 'ArrayList'
+	]
+	importMappings = [
+		LinkedHashSet: 'java.util.ArrayList'
+	]
+	globalProperties = [
+		skipOverwrite: "true"
+	]
+	configOptions = [
+		configPackage: "${openapiConfigPackage}",
+		dateLibrary: "java8",
+		openApiNullable: "false",
+		disallowAdditionalPropertiesIfNotPresent: "false",
+		groupId: "${group}",
+		hateoas: "false",
+		interfaceOnly: "true",
+		licenseName: "Unlicense",
+		singleContentTypes: "true", // Whether to select only one produces/consumes content-type by operation.
+		title: "${rootProject.name}",
+		unhandledException: "true", // Declare operation methods to throw a generic exception and allow unhandled exceptions
+		useTags: "true", // use tags for creating interface and controller classnames
+		useOptional: "true",
+		skipDefaultInterface: "true",
+		responseWrapper: "CompletableFuture"
+	]
+}
+
+tasks.openApiGenerate {
+	doLast {
+		delete (
+				"${openapiOutputDir}/.openapi-generator"
+				)
+	}
+}
+
+// https://github.com/diffplug/spotless/tree/main/plugin-gradle
+// ./gradlew spotlessApply
+spotless {
+	encoding 'UTF-8' // all formats will be interpreted as UTF-8
+	java {
+		target 'src/**/*.java'
+		toggleOffOn('@formatter:off','@formatter:on') // 原本 spotless:off, spotless:on
+		googleJavaFormat()
+		removeUnusedImports()
+		importOrder()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+	groovyGradle {
+		target '*.gradle'
+		greclipse()
+	}
+}

@@ -1,0 +1,92 @@
+databaseChangeLog:
+- changeSet:
+    id: 1636355885256-1
+    author: samzhu (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: cart_number
+            remarks: 購物車編號
+            type: VARCHAR(60)
+        - column:
+            constraints:
+              nullable: false
+            name: customer_name
+            remarks: 客戶名稱
+            type: VARCHAR(60)
+        - column:
+            constraints:
+              nullable: false
+            name: price
+            remarks: 金額
+            type: INT
+        remarks: 購物車資料
+        tableName: cart
+- changeSet:
+    id: 1636355885256-2
+    author: samzhu (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+            name: id
+            remarks: 流水編號
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: cart_number
+            remarks: 購物車編號
+            type: VARCHAR(60)
+        - column:
+            constraints:
+              nullable: false
+            name: product_id
+            remarks: 商品編號
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: product_tittle
+            remarks: 商品標題
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: price
+            remarks: 金額
+            type: INT
+        remarks: 購物車商品資料
+        tableName: cart_product
+- changeSet:
+    id: 1636355885256-3
+    author: samzhu (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: cart_number
+        indexName: cart_number
+        tableName: cart_product
+- changeSet:
+    id: 1636355885256-4
+    author: samzhu (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: cart_number
+        baseTableName: cart_product
+        constraintName: cart_product_ibfk_1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: cart_number
+        referencedTableName: cart
+        validate: true
+

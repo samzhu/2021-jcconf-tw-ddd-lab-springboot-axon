@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: history/changelog-0001.yaml
+      relativeToChangelogFile: true
+      description: Axon 功能表格
+  - include:
+      file: history/changelog-0002.yaml
+      relativeToChangelogFile: true
+      description: 購物車表格

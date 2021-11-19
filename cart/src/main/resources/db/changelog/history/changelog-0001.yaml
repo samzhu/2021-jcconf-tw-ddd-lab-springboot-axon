@@ -1,0 +1,118 @@
+databaseChangeLog:
+- changeSet:
+    id: 1636340980690-1
+    author: samzhu (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: association_key
+            type: VARCHAR(255)
+        - column:
+            name: association_value
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: saga_id
+            type: VARCHAR(255)
+        - column:
+            name: saga_type
+            type: VARCHAR(255)
+        tableName: association_value_entry
+- changeSet:
+    id: 1636340980690-2
+    author: samzhu (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            name: next_val
+            type: BIGINT
+        tableName: hibernate_sequence
+- changeSet:
+    id: 1636340980690-3
+    author: samzhu (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: saga_id
+            type: VARCHAR(255)
+        - column:
+            name: revision
+            type: VARCHAR(255)
+        - column:
+            name: saga_type
+            type: VARCHAR(255)
+        - column:
+            name: serialized_saga
+            type: LONGBLOB
+        tableName: saga_entry
+- changeSet:
+    id: 1636340980690-4
+    author: samzhu (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+            name: processor_name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              primaryKey: true
+            name: segment
+            type: INT
+        - column:
+            name: owner
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: timestamp
+            type: VARCHAR(255)
+        - column:
+            name: token
+            type: LONGBLOB
+        - column:
+            name: token_type
+            type: VARCHAR(255)
+        tableName: token_entry
+- changeSet:
+    id: 1636340980690-5
+    author: samzhu (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: saga_id
+        - column:
+            name: saga_type
+        indexName: IDXgv5k1v2mh6frxuy5c0hgbau94
+        tableName: association_value_entry
+- changeSet:
+    id: 1636340980690-6
+    author: samzhu (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: saga_type
+        - column:
+            name: association_key
+        - column:
+            name: association_value
+        indexName: IDXk45eqnxkgd8hpdn6xixn8sgft
+        tableName: association_value_entry
+
